@@ -1,0 +1,31 @@
+.infinite-spiral {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.infinite-spiral__stage {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	transform-style: preserve-3d;
+}
+
+.infinite-spiral__item {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	overflow: hidden;
+	transform: translate(-50%, -50%);
+	will-change: transform, opacity;
+	backface-visibility: hidden;
+	background: transparent;
+}
+
+.infinite-spiral__image {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}

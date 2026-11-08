@@ -1,0 +1,433 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+	--color-ground: #07030f;
+	--color-ink: #f7f3ff;
+	--color-muted: #cfc4e6;
+	--color-accent: #ff2bd1;
+	--font-sans: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+	html {
+		background: var(--color-ground);
+		scroll-behavior: smooth;
+	}
+
+	body {
+		background: var(--color-ground);
+		color: var(--color-ink);
+		font-family: var(--font-sans);
+		overflow-x: hidden;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	/* Mobile: no scrollbar gutter, so locking scroll (cart open) can't shift the layout */
+	@media (max-width: 767px) {
+		* {
+			scrollbar-width: none;
+		}
+
+		*::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	::selection {
+		background: var(--color-accent);
+		color: #0b0313;
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--color-ink);
+		outline-offset: 3px;
+	}
+}
+
+@utility rise {
+	animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes introIcon {
+	0% {
+		opacity: 0;
+		transform: scale(0.5) translateY(18px);
+		animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	22% {
+		opacity: 1;
+		transform: scale(1.06) translateY(0);
+		animation-timing-function: cubic-bezier(0.34, 1.2, 0.64, 1);
+	}
+	34% {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+		animation-timing-function: linear;
+	}
+	73% {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+		animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.2);
+	}
+	100% {
+		opacity: 0;
+		transform: scale(0.88) translateY(-12px);
+	}
+}
+
+/* Card surface: same translucent white as the navbar and footer over the page shader */
+@utility material-card {
+	position: relative;
+	border-radius: 28px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: rgba(255, 255, 255, 0.045);
+	-webkit-backdrop-filter: blur(24px);
+	backdrop-filter: blur(24px);
+	box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
+	transition:
+		transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+		background-color 260ms ease,
+		border-color 260ms ease,
+		box-shadow 260ms ease;
+
+	&:hover {
+		transform: translateY(-3px);
+		background: rgba(255, 255, 255, 0.07);
+		border-color: rgba(255, 255, 255, 0.18);
+		box-shadow:
+			0 18px 50px rgba(0, 0, 0, 0.4),
+			0 28px 60px -30px rgba(0, 0, 0, 0.9);
+	}
+}
+
+@media (prefers-reduced-transparency: reduce) {
+	.material-card {
+		background: rgba(28, 16, 54, 0.92);
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+}
+
+/* Calendar popover */
+.date-pop {
+	animation: date-pop 180ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes date-pop {
+	from {
+		opacity: 0;
+		transform: scale(0.95) translateY(-4px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Cart drawer */
+.drawer-in {
+	animation: drawer-in 380ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes drawer-in {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: none;
+	}
+}
+
+.drawer-out {
+	animation: drawer-out 260ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes drawer-out {
+	to {
+		transform: translateX(100%);
+	}
+}
+
+.scrim-in {
+	animation: scrim-in 280ms ease-out both;
+}
+
+@keyframes scrim-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.scrim-out {
+	animation: scrim-out 260ms ease-in both;
+}
+
+@keyframes scrim-out {
+	to {
+		opacity: 0;
+	}
+}
+
+/* Admin dialog scroll area */
+.admin-scroll {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(247, 243, 255, 0.18) transparent;
+}
+
+.admin-scroll::-webkit-scrollbar {
+	width: 10px;
+}
+
+.admin-scroll::-webkit-scrollbar-thumb {
+	background: rgba(247, 243, 255, 0.16);
+	border: 3px solid transparent;
+	border-radius: 999px;
+	background-clip: content-box;
+}
+
+.admin-scroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+/* Count + confirmation entrances */
+.count-in {
+	animation: count-in 320ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes count-in {
+	0% {
+		opacity: 0;
+		transform: scale(0.4);
+	}
+	60% {
+		opacity: 1;
+		transform: scale(1.18);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.confirm-in {
+	animation: confirm-in 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes confirm-in {
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.97);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Toasts: grows from small to full so it reads as "arrived" without a slide. */
+.toast-pop {
+	animation: toast-pop 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes toast-pop {
+	from {
+		opacity: 0;
+		transform: scale(0.82) translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Re-blurring backdrop panels every frame while a section animates is too costly on low-end GPUs. */
+.ac-animating,
+.ac-animating * {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Client dashboard: one gentle entrance, then feedback only */
+.rental-enter {
+	animation: rental-enter 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes rental-enter {
+	from {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Intro animations */
+.intro {
+	background-color: var(--color-ground);
+	transition: transform 650ms cubic-bezier(0.76, 0, 0.24, 1);
+	will-change: transform;
+}
+
+.intro.is-leaving {
+	transform: translateY(-100%);
+}
+
+.intro-content {
+	transition:
+		opacity 280ms ease,
+		transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.intro.is-leaving .intro-content {
+	opacity: 0;
+	transform: translateY(14px);
+}
+
+.intro-word {
+	animation: intro-word-out 300ms cubic-bezier(0.7, 0, 0.84, 0) 1750ms both;
+}
+
+.intro-outro {
+	font-size: clamp(1.375rem, 2.6vw, 2.25rem);
+	font-weight: 400;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
+}
+
+.intro-outro-word {
+	display: inline-block;
+	overflow: hidden;
+	margin-bottom: -0.16em;
+	padding-bottom: 0.16em;
+}
+
+.intro-outro-word > span {
+	display: inline-block;
+	animation: intro-outro-word 550ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	transform: translateY(125%);
+}
+
+@keyframes intro-word-out {
+	0% {
+		opacity: 1;
+		transform: none;
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(-12px);
+	}
+}
+
+@keyframes intro-outro-word {
+	0% {
+		opacity: 0;
+		transform: translateY(125%);
+	}
+	100% {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.001ms !important;
+		animation-delay: 0ms !important;
+		transition-duration: 0.001ms !important;
+	}
+}
+
+@utility animate-fade-in {
+	animation: adminFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-scale-in {
+	animation: adminScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-slide-down {
+	animation: adminSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Matches the GlideSelect menu pop */
+@utility animate-glide-pop {
+	animation: glidePop 180ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes glidePop {
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes adminFadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+/* Printing an order receipt: only the dialog's print-receipt subtree reaches the page. */
+@media print {
+	html,
+	body {
+		background: #fff;
+	}
+
+	body * {
+		visibility: hidden !important;
+	}
+
+	.print-receipt,
+	.print-receipt * {
+		visibility: visible !important;
+	}
+
+	.print-receipt {
+		position: absolute;
+		inset: 0 auto auto 0;
+		width: 100%;
+		max-width: none !important;
+		max-height: none !important;
+		margin: 0 !important;
+		overflow: visible !important;
+		border: 0 !important;
+		border-radius: 0 !important;
+		background: #fff !important;
+		box-shadow: none !important;
+		-webkit-backdrop-filter: none !important;
+		backdrop-filter: none !important;
+	}
+
+	.print-receipt * {
+		color: #111 !important;
+		border-color: #d4d4d8 !important;
+		background: transparent !important;
+		box-shadow: none !important;
+	}
+}
+
+@keyframes adminScaleIn {
+	from { opacity: 0; transform: scale(0.96); }
+	to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes adminSlideDown {
+	from { opacity: 0; transform: translateY(12px); }
+	to { opacity: 1; transform: translateY(0); }
+}
