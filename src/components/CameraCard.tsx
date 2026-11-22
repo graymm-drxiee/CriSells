@@ -1,5 +1,5 @@
 import { ArrowUpRight, Star } from "lucide-react";
-import type { Camera } from "../types";
+import type { Camera } from "../lib/types";
 
 // One card for both catalogs so the home and member views can't drift apart.
 export default function CameraCard({

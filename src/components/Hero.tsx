@@ -1,5 +1,5 @@
-import InfiniteSpiral from "./React Bits Components/animation/InfiniteSpiral";
-import AnimatedContent from "./React Bits Components/animation/AnimatedContent";
+import InfiniteSpiral from "./shared/animation/InfiniteSpiral";
+import AnimatedContent from "./shared/animation/AnimatedContent";
 
 const spiralItems = [
 	{ src: "/photos/spiral-1.jpg", alt: "Mount Cook at sunset" },

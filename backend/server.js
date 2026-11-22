@@ -2,8 +2,9 @@ import express from "express";
 import * as OTPAuth from "otpauth";
 import QRCode from "qrcode";
 import crypto from "node:crypto";
+import { setVapidDetails, sendNotification } from "web-push";
 import { ObjectId } from "mongodb";
-import { connect, users, products, orders, sessions, passwordResets, counters, settings } from "./db.js";
+import { connect, users, products, orders, sessions, passwordResets, counters, settings, pushSubscriptions } from "./db.js";
 
 const port = Number(process.env.PORT) || 4000;
 const issuer = process.env.TOTP_ISSUER || "CriSells";
@@ -291,7 +292,7 @@ app.use((_req, res, next) => {
 		"X-Content-Type-Options": "nosniff",
 		"X-Frame-Options": "DENY",
 		"Referrer-Policy": "strict-origin-when-cross-origin",
-		"Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+		"Permissions-Policy": "camera=(), microphone=(), geolocation=(self)",
 	});
 	next();
 });
@@ -591,6 +592,98 @@ app.post(
 	}),
 );
 
+// ---------- push notifications ----------
+
+let vapidReady = false;
+
+// Push is optional: without VAPID keys the app keeps working and sends are skipped.
+function configureVapid() {
+	if (vapidReady) return true;
+	const publicKey = process.env.VAPID_PUBLIC_KEY;
+	const privateKey = process.env.VAPID_PRIVATE_KEY;
+	if (!publicKey || !privateKey) return false;
+	setVapidDetails(process.env.VAPID_SUBJECT || "mailto:admin@crisells.com", publicKey, privateKey);
+	vapidReady = true;
+	return true;
+}
+
+app.get(
+	"/api/push/public-key",
+	route(async (_req, res) => {
+		if (!configureVapid()) return res.status(503).json({ error: "Push notifications are not configured." });
+		res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
+	}),
+);
+
+app.post(
+	"/api/push/subscribe",
+	route(async (req, res) => {
+		// Staff opening the admin panel may only have the admin cookie.
+		const session = (await readSession(req, "client")) || (await readSession(req, "admin"));
+		if (!session) return res.status(401).json({ error: "Please sign in to turn on notifications." });
+		const { endpoint, keys } = req.body || {};
+		if (!endpoint || !keys?.p256dh || !keys?.auth) throw badRequest("Invalid push subscription.");
+
+		// Same browser signing in as another account simply moves the endpoint.
+		await pushSubscriptions.updateOne(
+			{ endpoint },
+			{ $set: { userId: session.userId, endpoint, keys: { p256dh: keys.p256dh, auth: keys.auth } } },
+			{ upsert: true },
+		);
+		console.log(`Push subscribed for ${session.email || session.userId}`);
+		res.status(201).json({ ok: true });
+	}),
+);
+
+app.post(
+	"/api/push/unsubscribe",
+	route(async (req, res) => {
+		const session = await readSession(req, "client");
+		if (!session) return res.status(401).json({ error: "Not signed in." });
+		await pushSubscriptions.deleteOne({ endpoint: String(req.body?.endpoint || ""), userId: session.userId });
+		res.json({ ok: true });
+	}),
+);
+
+// A push failure must never break checkout or an order update. Callers await it
+// because a serverless host freezes the process once the response is sent.
+async function sendPushToUser(userId, payload) {
+	if (!userId || !configureVapid()) return;
+	try {
+		const subscriptions = await pushSubscriptions.find({ userId: String(userId) }).toArray();
+		await Promise.all(
+			subscriptions.map(async (sub) => {
+				try {
+					await sendNotification(
+						{ endpoint: sub.endpoint, keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth } },
+						JSON.stringify(payload),
+						{ timeout: 5000 },
+					);
+					console.log(`Push sent to ${userId}: ${payload.title}`);
+				} catch (err) {
+					// 404/410 means the browser dropped this subscription — clean it up.
+					if (err?.statusCode === 404 || err?.statusCode === 410) {
+						await pushSubscriptions.deleteOne({ _id: sub._id });
+					} else {
+						console.error("Push send failed:", err?.message || err);
+					}
+				}
+			}),
+		);
+	} catch (err) {
+		console.error("Push lookup failed:", err);
+	}
+}
+
+async function notifyStaff(payload) {
+	try {
+		const staff = await users.find({ role: { $in: ADMIN_ROLES } }, { projection: { _id: 1 } }).toArray();
+		await Promise.all(staff.map((user) => sendPushToUser(user._id.toString(), payload)));
+	} catch {
+		// Push is optional.
+	}
+}
+
 // ---------- products ----------
 
 app.get(
@@ -780,6 +873,7 @@ app.post(
 		const session = await readSession(req, "client");
 		if (!session) return res.status(401).json({ error: "Please sign in to reserve." });
 		const order = await createOrder({ ...req.body, userId: session.userId });
+		await notifyStaff({ title: "New CriSells order", body: `${order.orderNumber} · $${order.total}`, url: "/admin/orders" });
 		res.status(201).json({ order });
 	}),
 );
@@ -954,6 +1048,13 @@ app.patch(
 		const closes = ["Cancelled", "Refunded", "Completed"].includes(patch.status);
 		if (closes && !["Cancelled", "Refunded", "Completed"].includes(existing.status)) {
 			await restock(existing.items);
+		}
+		if (patch.status && patch.status !== existing.status) {
+			await sendPushToUser(existing.userId, {
+				title: `Order ${existing.orderNumber}`,
+				body: `Your reservation is now ${patch.status}.`,
+				url: "/account#rentals",
+			});
 		}
 		res.json(publicOrder(doc));
 	}),

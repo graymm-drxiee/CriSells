@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import GlideSelect from "./React Bits Components/ui/GlideSelect";
-import GlideDate from "./React Bits Components/ui/GlideDate";
-import { useOverlayPause } from "../useOverlayPause";
-import type { CartItem, CheckoutDetails } from "../types";
+import { LocateFixed } from "lucide-react";
+import GlideSelect from "./shared/ui/GlideSelect";
+import GlideDate from "./shared/ui/GlideDate";
+import LocationPicker from "./shared/LocationPicker";
+import { useOverlayPause } from "../hooks/useOverlayPause";
+import type { CartItem, CheckoutDetails } from "../lib/types";
 
 function todayStr(): string {
 	return new Date().toISOString().split("T")[0];
@@ -403,6 +405,65 @@ function CheckoutView({
 	);
 	const [pending, setPending] = useState(false);
 	const [error, setError] = useState("");
+	const [coords, setCoords] = useState<{ latitude: number; longitude: number }>();
+	const [locating, setLocating] = useState(false);
+	const [locationHint, setLocationHint] = useState("");
+
+	// Reverse geocode the pin into the free-text address, which the customer can still edit.
+	const applyLocation = async (latitude: number, longitude: number) => {
+		setCoords({ latitude, longitude });
+		setLocationHint("");
+		try {
+			const res = await fetch(
+				`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&accept-language=en&lat=${latitude}&lon=${longitude}`,
+			);
+			if (!res.ok) throw new Error("lookup failed");
+			const a = (await res.json())?.address || {};
+			const parts = [
+				[a.house_number, a.road || a.pedestrian].filter(Boolean).join(" "),
+				a.neighbourhood || a.quarter || a.suburb || a.village || a.hamlet || a.city_district,
+				a.city || a.town || a.municipality || a.county,
+				a.state || a.province || a.region,
+				a.postcode,
+			].filter(Boolean);
+			if (parts.length) setAddress(parts.join(", "));
+			else setLocationHint("Pin saved, but no street address was found. Please type it.");
+		} catch {
+			setLocationHint("Pin saved, but the address lookup failed. Please type it.");
+		}
+	};
+
+	const useMyLocation = () => {
+		if (!("geolocation" in navigator)) {
+			setLocationHint("This browser cannot get your location. Tap the map instead.");
+			return;
+		}
+		if (!window.isSecureContext) {
+			setLocationHint("Location needs HTTPS (or localhost). You can still tap the map.");
+			return;
+		}
+		setLocating(true);
+		setLocationHint("");
+		navigator.geolocation.getCurrentPosition(
+			async (position) => {
+				try {
+					await applyLocation(position.coords.latitude, position.coords.longitude);
+				} finally {
+					setLocating(false);
+				}
+			},
+			(err) => {
+				setLocating(false);
+				const messages: Record<number, string> = {
+					1: "Location permission denied. You can still tap the map.",
+					2: "Your location is unavailable right now. Tap the map instead.",
+					3: "Location lookup timed out. Tap the map instead.",
+				};
+				setLocationHint(messages[err.code] || "Could not get your location.");
+			},
+			{ enableHighAccuracy: true, timeout: 10000 },
+		);
+	};
 
 	return (
 		<form
@@ -458,14 +519,35 @@ function CheckoutView({
 				/>
 
 				{deliveryMode !== "pickup" && (
-					<Field
-						label="Delivery address"
-						placeholder="House no, street, barangay, city"
-						name="address"
-						autoComplete="street-address"
-						value={address}
-						onChange={setAddress}
-					/>
+					<div className="space-y-3">
+						<Field
+							label="Delivery address"
+							placeholder="House no, street, barangay, city"
+							name="address"
+							autoComplete="street-address"
+							value={address}
+							onChange={setAddress}
+						/>
+						<button
+							type="button"
+							onClick={useMyLocation}
+							disabled={locating}
+							className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 text-[13px] font-medium text-ink/80 transition-colors hover:bg-white/10 disabled:opacity-60"
+						>
+							<LocateFixed className="h-4 w-4" aria-hidden="true" />
+							{locating ? "Finding you…" : "Use my current location"}
+						</button>
+						{locationHint && (
+							<p className="text-[12px] leading-relaxed text-amber-200" role="status">
+								{locationHint}
+							</p>
+						)}
+						<LocationPicker
+							latitude={coords?.latitude}
+							longitude={coords?.longitude}
+							onPick={applyLocation}
+						/>
+					</div>
 				)}
 
 				<div>

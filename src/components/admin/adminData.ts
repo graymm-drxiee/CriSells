@@ -1,4 +1,4 @@
-import type { CameraCategory } from "../../types";
+import type { CameraCategory } from "../../lib/types";
 
 export interface ProductVariant {
   id: string;

@@ -1,5 +1,5 @@
 import { Calendar, Settings, ShieldCheck, Truck } from "lucide-react";
-import AnimatedContent from "./React Bits Components/animation/AnimatedContent";
+import AnimatedContent from "./shared/animation/AnimatedContent";
 
 const reasons = [
 	{

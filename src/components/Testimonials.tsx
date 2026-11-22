@@ -1,5 +1,5 @@
 import { Quote } from "lucide-react";
-import AnimatedContent from "./React Bits Components/animation/AnimatedContent";
+import AnimatedContent from "./shared/animation/AnimatedContent";
 
 // Placeholder testimonials: swap for real, attributed reviews before launch.
 const testimonials = [

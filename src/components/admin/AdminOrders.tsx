@@ -20,8 +20,9 @@ import {
   FormSection,
 } from "./ui";
 import { orderStatusOptions, statusToVariant, titleOptions, genderOptions, pronounOptions, formatMoney, formatDate, type AdminOrder, type OrderStatus } from "./adminData";
-import { api } from "../../api";
-import AnimatedContent from "../React Bits Components/animation/AnimatedContent";
+import { api } from "../../lib/api";
+import { useLivePoll } from "../../hooks/useLivePoll";
+import AnimatedContent from "../shared/animation/AnimatedContent";
 
 export function AdminOrders() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
@@ -34,11 +35,18 @@ export function AdminOrders() {
   const [createOpen, setCreateOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  useEffect(() => {
+  // Poll so orders placed on the mobile client show up without a manual refresh.
+  const load = () => {
     api<AdminOrder[]>("/api/admin/orders")
-      .then(setOrders)
+      .then((list) => {
+        setOrders(list);
+        setLoadError("");
+      })
       .catch((err) => setLoadError(err.message));
-  }, []);
+  };
+
+  useEffect(load, []);
+  useLivePoll(load);
 
   const filtered = useMemo(() => {
     return orders.filter((o) => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { useOverlayPause } from "../useOverlayPause";
-import type { Camera } from "../types";
+import { useOverlayPause } from "../hooks/useOverlayPause";
+import type { Camera } from "../lib/types";
 
 const specLabels: Record<keyof Camera["specs"], string> = {
 	sensor: "Sensor",

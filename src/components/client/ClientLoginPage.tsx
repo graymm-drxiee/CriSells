@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Lock, Mail, Eye, EyeOff, ArrowLeft, User, Phone, MapPin, Check, ShieldCheck, Copy } from "lucide-react";
 import CameraIcon from "../CameraIcon";
-import CodeSlots from "../React Bits Components/ui/CodeSlots";
-import { api } from "../../api";
+import CodeSlots from "../shared/ui/CodeSlots";
+import { api } from "../../lib/api";
 import type { TwoFactorSetup } from "../admin/AdminAuthContext";
-import type { ClientUser } from "../../types";
+import type { ClientUser } from "../../lib/types";
 
 function GoogleIcon() {
 	return (

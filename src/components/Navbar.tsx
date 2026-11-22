@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CalendarDays, Camera, Home, User } from "lucide-react";
 import CameraIcon from "./CameraIcon";
+import EnableNotifications from "./shared/ui/EnableNotifications";
 
 const links = [
 	{ label: "Catalog", href: "#catalog" },
@@ -223,6 +224,7 @@ export default function Navbar({
 									}`}
 								>
 									<p className="truncate px-3 py-2 text-[12px] text-ink/50">{email}</p>
+									<EnableNotifications />
 									<button
 										type="button"
 										onClick={() => {

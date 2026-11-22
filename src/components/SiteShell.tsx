@@ -4,8 +4,8 @@ import Navbar, { MobileTabBar } from "./Navbar";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
 import AddToCartAlert from "./client/AddToCartAlert";
-import { api } from "../api";
-import type { Camera, CartItem, ClientUser, CheckoutDetails } from "../types";
+import { api } from "../lib/api";
+import type { Camera, CartItem, ClientUser, CheckoutDetails } from "../lib/types";
 
 interface SiteContextValue {
 	user: ClientUser | null;

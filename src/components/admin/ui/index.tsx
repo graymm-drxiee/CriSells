@@ -2,7 +2,7 @@ import { type ReactNode, type ButtonHTMLAttributes, type InputHTMLAttributes, ty
 import { createPortal } from "react-dom";
 import { clsx } from "clsx";
 import { ChevronDown, Search, X } from "lucide-react";
-import GlideSelect from "../../React Bits Components/ui/GlideSelect";
+import GlideSelect from "../../shared/ui/GlideSelect";
 
 const cn = (...args: Parameters<typeof clsx>) => clsx(args);
 

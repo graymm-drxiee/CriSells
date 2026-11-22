@@ -9,8 +9,8 @@ import { useSite } from "../SiteShell";
 import Catalog from "./ClientCatalog";
 import ClientContact from "./ClientContact";
 import ClientOrderModal from "./ClientOrderModal";
-import { api } from "../../api";
-import type { Camera as CameraType, ClientOrder } from "../../types";
+import { api } from "../../lib/api";
+import type { Camera as CameraType, ClientOrder } from "../../lib/types";
 
 const statusTone: Record<string, string> = {
 	Pending: "bg-amber-400/15 text-amber-200 ring-amber-300/20",

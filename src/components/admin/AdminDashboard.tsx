@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Calendar, Package, ShoppingCart, Banknote, AlertTriangle } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, Badge } from "./ui";
-import AnimatedContent from "../React Bits Components/animation/AnimatedContent";
+import AnimatedContent from "../shared/animation/AnimatedContent";
 import { useAdminAuth } from "./AdminAuthContext";
 import { statusToVariant, orderStatusOptions, formatMoney, type AdminOrder, type AdminProduct, type OrderStatus } from "./adminData";
-import { api } from "../../api";
+import { api } from "../../lib/api";
+import { useLivePoll } from "../../hooks/useLivePoll";
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
   Pending: "bg-amber-400",
@@ -25,10 +26,13 @@ export function AdminDashboard() {
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
 
-  useEffect(() => {
+  const load = () => {
     api<AdminProduct[]>("/api/admin/products").then(setProducts).catch(() => null);
     api<AdminOrder[]>("/api/admin/orders").then(setOrders).catch(() => null);
-  }, []);
+  };
+
+  useEffect(load, []);
+  useLivePoll(load);
 
   const stats = useMemo(() => {
     const paidOrders = orders.filter((o) => o.status !== "Cancelled" && o.status !== "Refunded");

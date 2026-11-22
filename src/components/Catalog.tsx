@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RotateCcw } from "lucide-react";
-import GlideSelect from "./React Bits Components/ui/GlideSelect";
-import AnimatedContent from "./React Bits Components/animation/AnimatedContent";
+import GlideSelect from "./shared/ui/GlideSelect";
+import AnimatedContent from "./shared/animation/AnimatedContent";
 import CameraCard from "./CameraCard";
 import CameraDetail from "./CameraDetail";
-import { categories } from "../data";
-import { api } from "../api";
+import { categories } from "../lib/data";
+import { api } from "../lib/api";
 import { useSite } from "./SiteShell";
-import type { Camera } from "../types";
+import type { Camera } from "../lib/types";
 
 export default function Catalog({
 	onAddToCart,

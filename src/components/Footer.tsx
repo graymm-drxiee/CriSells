@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import AnimatedContent from "./React Bits Components/animation/AnimatedContent";
+import AnimatedContent from "./shared/animation/AnimatedContent";
 import CameraIcon from "./CameraIcon";
 
 const columns = [

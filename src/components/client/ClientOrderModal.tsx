@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ArrowLeft, Camera, Check, Printer, X } from "lucide-react";
-import { useOverlayPause } from "../../useOverlayPause";
-import { api } from "../../api";
-import type { ClientOrder } from "../../types";
+import { useOverlayPause } from "../../hooks/useOverlayPause";
+import { api } from "../../lib/api";
+import type { ClientOrder } from "../../lib/types";
 
 const statusTone: Record<string, string> = {
 	Pending: "bg-amber-400/15 text-amber-200 ring-amber-300/20",

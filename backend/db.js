@@ -11,6 +11,7 @@ export let sessions;
 export let passwordResets;
 export let counters;
 export let settings;
+export let pushSubscriptions;
 
 // Some networks (this one included) drop a large share of Atlas TLS handshakes,
 // so a single connect() can fail intermittently. Keep retrying instead of crashing.
@@ -43,6 +44,7 @@ export async function connect() {
 	passwordResets = db.collection("passwordResets");
 	counters = db.collection("counters");
 	settings = db.collection("settings");
+	pushSubscriptions = db.collection("pushSubscriptions");
 
 	await Promise.all([
 		users.createIndex({ email: 1 }, { unique: true }),
@@ -55,5 +57,7 @@ export async function connect() {
 		sessions.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
 		passwordResets.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
 		passwordResets.createIndex({ tokenHash: 1 }, { unique: true }),
+		pushSubscriptions.createIndex({ endpoint: 1 }, { unique: true }),
+		pushSubscriptions.createIndex({ userId: 1 }),
 	]);
 }

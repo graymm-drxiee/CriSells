@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { AlertTriangle, Bell, ChevronDown, LogOut, ShoppingCart, User } from "lucide-react";
 import type { AdminUser } from "./AdminAuthContext";
 import type { AdminOrder, AdminProduct } from "./adminData";
-import { api } from "../../api";
+import { api } from "../../lib/api";
+import EnableNotifications from "../shared/ui/EnableNotifications";
 
 /* Dropdown shell: click to toggle, closes on outside click or Escape. */
 function HeaderDropdown({
@@ -122,6 +123,8 @@ export function AdminNotifications() {
               {count} new
             </span>
           </div>
+          <div className="h-px bg-white/10" />
+          <EnableNotifications />
           <div className="h-px bg-white/10" />
           {count === 0 ? (
             <p className="px-3 py-6 text-center text-[13px] text-ink/45">You're all caught up.</p>

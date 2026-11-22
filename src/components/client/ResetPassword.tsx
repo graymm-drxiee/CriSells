@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, Lock } from "lucide-react";
 import { useSite } from "../SiteShell";
-import { api } from "../../api";
+import { api } from "../../lib/api";
 
 export default function ResetPassword() {
 	const [params] = useSearchParams();

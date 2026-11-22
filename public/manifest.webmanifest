@@ -1,0 +1,14 @@
+{
+  "name": "CriSells Camera Rentals",
+  "short_name": "CriSells",
+  "description": "Rent cameras, lenses, and cinema gear with doorstep delivery.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07030f",
+  "theme_color": "#07030f",
+  "icons": [
+    { "src": "/favicon.png", "sizes": "any", "type": "image/png" }
+  ]
+}

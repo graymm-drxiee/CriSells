@@ -20,8 +20,9 @@ import {
   FormSection,
 } from "./ui";
 import { categoryOptions, formatMoney, type AdminProduct, type ProductVariant } from "./adminData";
-import { api } from "../../api";
-import AnimatedContent from "../React Bits Components/animation/AnimatedContent";
+import { api } from "../../lib/api";
+import { useLivePoll } from "../../hooks/useLivePoll";
+import AnimatedContent from "../shared/animation/AnimatedContent";
 
 interface FormErrors {
   name?: string;
@@ -42,13 +43,18 @@ export function AdminCatalog() {
   const [deleteTarget, setDeleteTarget] = useState<AdminProduct | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
 
+  // Poll so stock changed by orders on the mobile client shows up without a manual refresh.
   const load = () => {
     api<AdminProduct[]>("/api/admin/products")
-      .then(setProducts)
+      .then((list) => {
+        setProducts(list);
+        setLoadError("");
+      })
       .catch((err) => setLoadError(err.message));
   };
 
   useEffect(load, []);
+  useLivePoll(load);
 
   const filtered = useMemo(() => {
     return products.filter((p) => {

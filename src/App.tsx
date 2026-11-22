@@ -1,8 +1,8 @@
 import { lazy, Suspense, useState, useEffect, useLayoutEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AdminAuthProvider, useAdminAuth } from "./components/admin/AdminAuthContext";
-import { useOverlayOpen } from "./useOverlayPause";
-import GradientWaves from "./components/React Bits Components/background/GradientWaves";
+import { useOverlayOpen } from "./hooks/useOverlayPause";
+import GradientWaves from "./components/shared/background/GradientWaves";
 import SiteShell, { useSite } from "./components/SiteShell";
 import Hero from "./components/Hero";
 import StatsBand from "./components/StatsBand";
@@ -14,8 +14,8 @@ import Intro from "./components/Intro";
 import ClientDashboard from "./components/client/ClientDashboard";
 import ClientLoginPage from "./components/client/ClientLoginPage";
 import ResetPassword from "./components/client/ResetPassword";
-import type { ClientUser } from "./types";
-import { api } from "./api";
+import type { ClientUser } from "./lib/types";
+import { api } from "./lib/api";
 
 // Admin screens are a separate bundle so storefront visitors never download them.
 const AdminLayout = lazy(() =>

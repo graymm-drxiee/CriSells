@@ -1,4 +1,4 @@
-import AnimatedContent from "./React Bits Components/animation/AnimatedContent";
+import AnimatedContent from "./shared/animation/AnimatedContent";
 
 const iconProps = {
 	fill: "none",

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import StrokeText from './React Bits Components/text/StrokeText'
+import StrokeText from './shared/text/StrokeText'
 import CameraIcon from './CameraIcon'
 
 const FONT_STACK = '"Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif'
